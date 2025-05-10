@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form, Input, Table, Select, message, Popconfirm } from 'antd';
 import axios from 'axios';
+import ShelvesPage from './ShelvesPage';
 
 interface Section {
   _id: string;
@@ -21,6 +22,7 @@ const RacksPage: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedRack, setSelectedRack] = useState<Rack | null>(null);
   const [form] = Form.useForm();
+  const [shelfCount, setShelfCount] = useState(1);
 
   const fetchRacks = async () => {
     setLoading(true);
@@ -50,13 +52,24 @@ const RacksPage: React.FC = () => {
 
   const handleCreate = async (values: any) => {
     try {
-      await axios.post('/api/racks', values);
-      message.success('Стеллаж создан');
+      const racksRes = await axios.get('/api/racks');
+      const rackCount = racksRes.data.length;
+      const position = { x: rackCount * 4, y: 0, z: 0 };
+      const rackRes = await axios.post('/api/racks', { ...values, position });
+      const rack = rackRes.data;
+      const shelvesToCreate = Array.from({ length: shelfCount }, (_, i) => ({
+        name: `${i + 1} полка - ${values.name}`,
+        rack: rack._id,
+        level: i
+      }));
+      await Promise.all(shelvesToCreate.map(shelf => axios.post('/api/shelves', shelf)));
+      message.success('Стеллаж и полки созданы');
       setModalOpen(false);
       form.resetFields();
+      setShelfCount(1);
       fetchRacks();
     } catch (err) {
-      message.error('Ошибка при создании стеллажа');
+      message.error('Ошибка при создании стеллажа или полок');
     }
   };
 
@@ -106,7 +119,7 @@ const RacksPage: React.FC = () => {
           <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редактировать</Button>
           <Popconfirm
             title="Удалить стеллаж?"
-            description="Вы уверены, что хотите удалить этот стеллаж?"
+            description="Внимание! При удалении стеллажа будут удалены все его полки. Товары, находящиеся в ячейках, удалены не будут. Вы уверены, что хотите удалить этот стеллаж?"
             onConfirm={() => handleDelete(record)}
             okText="Да"
             cancelText="Нет"
@@ -122,7 +135,7 @@ const RacksPage: React.FC = () => {
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>Стеллажи</h2>
-        <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedRack(null); }}>
+        <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedRack(null); setShelfCount(1); }}>
           Создать стеллаж
         </Button>
       </div>
@@ -135,7 +148,7 @@ const RacksPage: React.FC = () => {
       <Modal
         title={editMode ? 'Редактировать стеллаж' : 'Создать стеллаж'}
         open={modalOpen}
-        onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedRack(null); form.resetFields(); }}
+        onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedRack(null); form.resetFields(); setShelfCount(1); }}
         onOk={() => form.submit()}
         okText={editMode ? 'Сохранить' : 'Создать'}
       >
@@ -147,6 +160,13 @@ const RacksPage: React.FC = () => {
             <Select placeholder="Выберите секцию">
               {sections.map(s => (
                 <Select.Option key={s._id} value={s._id}>{s.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Количество полок (1-5)" required>
+            <Select value={shelfCount} onChange={setShelfCount}>
+              {[1,2,3,4,5].map(n => (
+                <Select.Option key={n} value={n}>{n}</Select.Option>
               ))}
             </Select>
           </Form.Item>

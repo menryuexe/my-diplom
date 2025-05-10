@@ -1,4 +1,5 @@
 import Rack, { IRack } from '../models/Rack';
+import Shelf from '../models/Shelf';
 
 class RackService {
   async getAll(): Promise<IRack[]> {
@@ -19,6 +20,8 @@ class RackService {
   }
 
   async remove(id: string): Promise<IRack | null> {
+    // Каскадное удаление всех полок, связанных с этим стеллажом
+    await Shelf.deleteMany({ rack: id });
     return Rack.findByIdAndDelete(id);
   }
 }

@@ -115,7 +115,15 @@ const CellsPage: React.FC = () => {
 
   const columns = [
     { title: 'Название', dataIndex: 'name', key: 'name' },
-    { title: 'Полка', dataIndex: ['shelf', 'name'], key: 'shelf', render: (_: any, record: Cell) => typeof record.shelf === 'object' ? (record.shelf as Shelf).name : '' },
+    {
+      title: 'Полка',
+      dataIndex: ['shelf', 'name'],
+      key: 'shelf',
+      render: (_: any, record: Cell) =>
+        record.shelf && typeof record.shelf === 'object'
+          ? record.shelf.name || '—'
+          : '—',
+    },
     { title: 'Товар', dataIndex: ['product', 'name'], key: 'product', render: (_: any, record: Cell) => record.product && typeof record.product === 'object' ? (record.product as Product).name : '' },
     {
       title: 'Действия',

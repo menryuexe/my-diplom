@@ -97,7 +97,15 @@ const ShelvesPage: React.FC = () => {
 
   const columns = [
     { title: 'Название', dataIndex: 'name', key: 'name' },
-    { title: 'Стеллаж', dataIndex: ['rack', 'name'], key: 'rack', render: (_: any, record: Shelf) => typeof record.rack === 'object' ? (record.rack as Rack).name : '' },
+    {
+      title: 'Стеллаж',
+      dataIndex: ['rack', 'name'],
+      key: 'rack',
+      render: (_: any, record: Shelf) =>
+        record.rack && typeof record.rack === 'object'
+          ? record.rack.name || '—'
+          : '—',
+    },
     {
       title: 'Действия',
       key: 'actions',

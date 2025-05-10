@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Grid, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import axios from 'axios';
 import { Drawer, Descriptions, Tag } from 'antd';
-import { useFrame, useThree } from '@react-three/fiber';
 
 interface Section {
   _id: string;
@@ -70,7 +69,7 @@ const CELL_SIZE = 0.8;
 const CELL_GAP = 0.2;
 const ROW_GAP = 2.5;
 const RACK_GAP = 1.2;
-const SHELVES_PER_RACK = 4;
+const MAX_CELL_HEIGHT = 0.7;
 
 const CameraController: React.FC<{ target: [number, number, number] | null; lookAt: [number, number, number] | null }> = ({ target, lookAt }) => {
   const { camera } = useThree();
@@ -97,6 +96,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const cameraRef = useRef<any>(null);
   const [targetCameraPos, setTargetCameraPos] = useState<[number, number, number] | null>(null);
   const [targetLookAt, setTargetLookAt] = useState<[number, number, number] | null>(null);
   const [lastHighlightId, setLastHighlightId] = useState<string | null>(null);
@@ -173,11 +173,13 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
 
   const getCellPosition = (cell: Cell, rack: Rack) => {
     if (!cell || !rack) return { x: 0, y: 0, z: 0 };
-    
     const rackPosition = rack.position || { x: 0, y: 0, z: 0 };
-    const shelfLevel = cell.shelf?.level || 0;
-    const y = -RACK_HEIGHT / 2 + (shelfLevel + 0.5) * (RACK_HEIGHT / SHELVES_PER_RACK);
-    
+    // Уровень полки (0 — самая нижняя)
+    const shelfLevel = cell.shelf?.level ?? 0;
+    // Высота одной полки
+    const shelfHeight = RACK_HEIGHT / (shelves.length ? shelves.length : 1);
+    // Центр полки
+    const y = -RACK_HEIGHT / 2 + shelfHeight * shelfLevel + shelfHeight / 2;
     return {
       x: rackPosition.x,
       y: y + rackPosition.y,
@@ -201,7 +203,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
   }
 
   // Проверяем наличие данных перед рендерингом
-  if (!racks.length || !cells.length) {
+  if (!racks.length) {
     return <div>Нет данных для отображения</div>;
   }
 
@@ -217,60 +219,122 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
         {/* Стеллажи */}
         {racks.map(rack => {
           if (!rack) return null;
-          
+          const rackX = rack.position?.x || 0;
+          // Динамическая высота стеллажа
+          const rackShelves = shelves.filter(shelf => {
+            if (!shelf) return false;
+            if (typeof shelf.rack === 'object') return shelf.rack._id === rack._id;
+            return shelf.rack === rack._id;
+          });
+          rackShelves.sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
+          const shelfCount = rackShelves.length || 1;
+          const BASE_HEIGHT = 1.2;
+          const SHELF_STEP = 0.7;
+          const rackHeight = BASE_HEIGHT + (shelfCount - 1) * SHELF_STEP;
+          // Сдвигаем стеллаж вверх, чтобы основание было на уровне пола
+          const rackY = (rack.position?.y || 0) + rackHeight / 2;
+          const rackZ = rack.position?.z || 0;
+          // Для N полок: первая на -rackHeight/2, последняя на +rackHeight/2
+          const getShelfY = (idx: number) => {
+            if (shelfCount === 1) return -rackHeight/2;
+            return -rackHeight/2 + idx * (rackHeight - 0.05) / (shelfCount - 1); // 0.05 — толщина полки
+          };
           return (
-            <group key={rack._id} position={[rack.position?.x || 0, rack.position?.y || 0, rack.position?.z || 0]}>
+            <group key={rack._id} position={[rackX, rackY, rackZ]}>
+              {/* Подпись стеллажа — поднята ещё выше над стеллажом */}
+              <Text
+                position={[0, rackHeight / 2 + 1.5, rackZ + RACK_DEPTH/2 + 0.15]}
+                fontSize={0.48}
+                color="#1976d2"
+                anchorX="center"
+                anchorY="bottom"
+                outlineColor="#fff"
+                outlineWidth={0.045}
+              >
+                {rack.name || '—'}
+              </Text>
               {/* Каркас стеллажа */}
               <mesh>
-                <boxGeometry args={[RACK_WIDTH, RACK_HEIGHT, RACK_DEPTH]} />
+                <boxGeometry args={[RACK_WIDTH, rackHeight, RACK_DEPTH]} />
                 <meshBasicMaterial color="#333" wireframe />
               </mesh>
-              
               {/* Полки */}
-              {[...Array(SHELVES_PER_RACK - 1)].map((_, shelfIdx) => (
-                <mesh key={shelfIdx} position={[0, -RACK_HEIGHT/2 + (shelfIdx+1)*(RACK_HEIGHT/SHELVES_PER_RACK), 0]}>
-                  <boxGeometry args={[RACK_WIDTH, 0.05, RACK_DEPTH]} />
-                  <meshStandardMaterial color="#888" />
-                </mesh>
-              ))}
-
-              {/* Ячейки */}
-              {cells
-                .filter(cell => cell && cell.shelf && cell.shelf.rack && cell.shelf.rack._id === rack._id)
-                .map(cell => {
-                  if (!cell) return null;
-                  const position = getCellPosition(cell, rack);
-                  return (
-                    <group key={cell._id}>
-                      <mesh
-                        position={[position.x, position.y, position.z]}
-                        onClick={() => handleCellClick(cell)}
-                        castShadow
-                      >
-                        <boxGeometry args={[CELL_SIZE, (RACK_HEIGHT/SHELVES_PER_RACK)-CELL_GAP, RACK_DEPTH-0.2]} />
-                        <meshStandardMaterial
-                          color={getCellColor(cell)}
-                          opacity={selectedCell?._id === cell._id ? 1 : 0.8}
-                          transparent
-                          emissive={selectedCell?._id === cell._id ? getCellColor(cell) : '#000'}
-                          emissiveIntensity={selectedCell?._id === cell._id ? 0.5 : 0}
-                        />
-                      </mesh>
-                      {/* Подпись ячейки */}
-                      <Text
-                        position={[position.x, position.y, position.z + (RACK_DEPTH/2) + 0.13]}
-                        fontSize={0.22}
-                        color="#222"
-                        anchorX="center"
-                        anchorY="middle"
-                        outlineColor="#fff"
-                        outlineWidth={0.02}
-                      >
-                        {cell.name || 'Без названия'}
-                      </Text>
-                    </group>
-                  );
-                })}
+              {rackShelves.map((shelf, shelfIdx) => {
+                const shelfCells = cells.filter(cell => {
+                  if (!cell || !cell.shelf) return false;
+                  const shelfId = typeof cell.shelf === 'object' ? cell.shelf._id : cell.shelf;
+                  return shelfId === shelf._id;
+                });
+                const cellCount = shelfCells.length;
+                const shelfY = getShelfY(shelfIdx);
+                return (
+                  <group key={shelf._id}>
+                    {/* Позиция полки по уровню */}
+                    <mesh position={[0, shelfY, 0]}>
+                      <boxGeometry args={[RACK_WIDTH, 0.05, RACK_DEPTH]} />
+                      <meshStandardMaterial color="#888" />
+                    </mesh>
+                    {/* Подпись полки по центру, чуть вперёд по Z */}
+                    <Text
+                      position={[0, shelfY + 0.08, rackZ + RACK_DEPTH/2 + 0.12]}
+                      fontSize={0.16}
+                      color="#333"
+                      anchorX="center"
+                      anchorY="bottom"
+                      outlineColor="#fff"
+                      outlineWidth={0.01}
+                    >
+                      {shelf.name || `${shelfIdx + 1} полка`}
+                    </Text>
+                    {/* Ячейки на этой полке */}
+                    {shelfCells.map((cell, cellIdx) => {
+                      const x = cellCount > 1
+                        ? -RACK_WIDTH/2 + (cellIdx + 0.5) * (RACK_WIDTH / cellCount)
+                        : 0;
+                      const nextShelfY = getShelfY(shelfIdx + 1);
+                      let cellHeight;
+                      if (cellCount === 1) {
+                        cellHeight = (shelfIdx < shelfCount - 1 ? nextShelfY - shelfY : rackHeight / shelfCount) - 0.08;
+                        cellHeight = Math.min(cellHeight, 0.9);
+                      } else {
+                        cellHeight = Math.min((shelfIdx < shelfCount - 1 ? nextShelfY - shelfY : rackHeight / shelfCount) - 0.08, MAX_CELL_HEIGHT);
+                      }
+                      const y = shelfY + (cellHeight / 2) + 0.025;
+                      const z = 0;
+                      return (
+                        <group key={cell._id}>
+                          <mesh
+                            position={[x, y, z]}
+                            onClick={() => handleCellClick(cell)}
+                            castShadow
+                          >
+                            <boxGeometry args={[CELL_SIZE, cellHeight, RACK_DEPTH-0.2]} />
+                            <meshStandardMaterial
+                              color={getCellColor(cell)}
+                              opacity={selectedCell?._id === cell._id ? 1 : 0.8}
+                              transparent
+                              emissive={selectedCell?._id === cell._id ? getCellColor(cell) : '#000'}
+                              emissiveIntensity={selectedCell?._id === cell._id ? 0.5 : 0}
+                            />
+                          </mesh>
+                          {/* Подпись ячейки, чуть вперёд по Z */}
+                          <Text
+                            position={[x, y, z + (RACK_DEPTH/2) + 0.18]}
+                            fontSize={0.22}
+                            color="#222"
+                            anchorX="center"
+                            anchorY="middle"
+                            outlineColor="#fff"
+                            outlineWidth={0.02}
+                          >
+                            {cell.name || 'Без названия'}
+                          </Text>
+                        </group>
+                      );
+                    })}
+                  </group>
+                );
+              })}
             </group>
           );
         })}
@@ -332,4 +396,4 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
   );
 };
 
-export default Warehouse3D; 
+export default Warehouse3D;
