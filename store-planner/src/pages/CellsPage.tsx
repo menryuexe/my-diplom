@@ -2,9 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form, Input, Table, Select, message, Popconfirm } from 'antd';
 import axios from 'axios';
 
+interface Rack {
+  _id: string;
+  name: string;
+}
+
 interface Shelf {
   _id: string;
   name: string;
+  rack: Rack | string;
 }
 
 interface Product {
@@ -23,10 +29,12 @@ const CellsPage: React.FC = () => {
   const [cells, setCells] = useState<Cell[]>([]);
   const [shelves, setShelves] = useState<Shelf[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [racks, setRacks] = useState<Rack[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
+  const [selectedRackId, setSelectedRackId] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   const fetchCells = async () => {
@@ -59,10 +67,20 @@ const CellsPage: React.FC = () => {
     }
   };
 
+  const fetchRacks = async () => {
+    try {
+      const res = await axios.get('/api/racks');
+      setRacks(res.data);
+    } catch (err) {
+      message.error('Ошибка при загрузке стеллажей');
+    }
+  };
+
   useEffect(() => {
     fetchCells();
     fetchShelves();
     fetchProducts();
+    fetchRacks();
   }, []);
 
   const handleCreate = async (values: any) => {
@@ -71,6 +89,7 @@ const CellsPage: React.FC = () => {
       message.success('Ячейка создана');
       setModalOpen(false);
       form.resetFields();
+      setSelectedRackId(null);
       fetchCells();
     } catch (err) {
       message.error('Ошибка при создании ячейки');
@@ -80,10 +99,17 @@ const CellsPage: React.FC = () => {
   const handleEdit = (cell: Cell) => {
     setEditMode(true);
     setSelectedCell(cell);
+    let rackId = null;
+    if (cell.shelf && typeof cell.shelf === 'object') {
+      rackId = (cell.shelf as Shelf).rack;
+      if (typeof rackId === 'object') rackId = rackId._id;
+    }
+    setSelectedRackId(rackId);
     form.setFieldsValue({
       ...cell,
       shelf: typeof cell.shelf === 'object' ? (cell.shelf as Shelf)._id : cell.shelf,
       product: cell.product && typeof cell.product === 'object' ? (cell.product as Product)._id : cell.product,
+      rack: rackId,
     });
     setModalOpen(true);
   };
@@ -149,7 +175,7 @@ const CellsPage: React.FC = () => {
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>Ячейки</h2>
-        <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedCell(null); }}>
+        <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedCell(null); setSelectedRackId(null); }}>
           Создать ячейку
         </Button>
       </div>
@@ -162,7 +188,7 @@ const CellsPage: React.FC = () => {
       <Modal
         title={editMode ? 'Редактировать ячейку' : 'Создать ячейку'}
         open={modalOpen}
-        onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedCell(null); form.resetFields(); }}
+        onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedCell(null); form.resetFields(); setSelectedRackId(null); }}
         onOk={() => form.submit()}
         okText={editMode ? 'Сохранить' : 'Создать'}
       >
@@ -170,9 +196,26 @@ const CellsPage: React.FC = () => {
           <Form.Item name="name" label="Название ячейки" rules={[{ required: true, message: 'Введите название' }]}> 
             <Input />
           </Form.Item>
+          <Form.Item name="rack" label="Стеллаж" rules={[{ required: true, message: 'Выберите стеллаж' }]}> 
+            <Select
+              placeholder="Выберите стеллаж"
+              onChange={rackId => {
+                setSelectedRackId(rackId);
+                form.setFieldsValue({ shelf: undefined });
+              }}
+              value={selectedRackId || undefined}
+            >
+              {racks.map(r => (
+                <Select.Option key={r._id} value={r._id}>{r.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
           <Form.Item name="shelf" label="Полка" rules={[{ required: true, message: 'Выберите полку' }]}> 
-            <Select placeholder="Выберите полку">
-              {shelves.map(s => (
+            <Select placeholder="Выберите полку" disabled={!selectedRackId}>
+              {shelves.filter(s => {
+                const rackId = typeof s.rack === 'object' ? s.rack._id : s.rack;
+                return rackId === selectedRackId;
+              }).map(s => (
                 <Select.Option key={s._id} value={s._id}>{s.name}</Select.Option>
               ))}
             </Select>
