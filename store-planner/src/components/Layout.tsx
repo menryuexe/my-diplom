@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
-import { HomeOutlined, DatabaseOutlined, TagsOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { HomeOutlined, DatabaseOutlined, TagsOutlined, AppstoreOutlined, PartitionOutlined, BarsOutlined, TableOutlined, AppstoreAddOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
 const { Header, Content, Sider } = Layout;
@@ -25,6 +25,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       label: <Link to="/warehouses">Склады</Link>,
     },
     {
+      key: '/sections',
+      icon: <PartitionOutlined />,
+      label: <Link to="/sections">Секции</Link>,
+    },
+    {
       key: '/products',
       icon: <TagsOutlined />,
       label: <Link to="/products">Товары</Link>,
@@ -33,6 +38,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       key: '/categories',
       icon: <AppstoreOutlined />,
       label: <Link to="/categories">Категории</Link>,
+    },
+    {
+      key: '/racks',
+      icon: <BarsOutlined />,
+      label: <Link to="/racks">Стеллажи</Link>,
+    },
+    {
+      key: '/shelves',
+      icon: <TableOutlined />,
+      label: <Link to="/shelves">Полки</Link>,
+    },
+    {
+      key: '/cells',
+      icon: <AppstoreAddOutlined />,
+      label: <Link to="/cells">Ячейки</Link>,
     },
   ];
 

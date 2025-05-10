@@ -14,6 +14,7 @@ const CategoriesPage: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [form] = Form.useForm();
+  const [search, setSearch] = useState('');
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -75,6 +76,9 @@ const CategoriesPage: React.FC = () => {
     }
   };
 
+  // Фильтрация по поиску
+  const filteredCategories = categories.filter(cat => cat.name.toLowerCase().includes(search.toLowerCase()));
+
   const columns = [
     { title: 'Название', dataIndex: 'name', key: 'name' },
     {
@@ -105,11 +109,21 @@ const CategoriesPage: React.FC = () => {
           Создать категорию
         </Button>
       </div>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+        <Input.Search
+          placeholder="Поиск по названию"
+          allowClear
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ width: 250 }}
+        />
+      </div>
       <Table
         loading={loading}
-        dataSource={categories}
+        dataSource={filteredCategories}
         columns={columns}
         rowKey="_id"
+        pagination={{ pageSize: 8, showSizeChanger: true, pageSizeOptions: [5, 8, 20, 50] }}
       />
       <Modal
         title={editMode ? 'Редактировать категорию' : 'Создать категорию'}
