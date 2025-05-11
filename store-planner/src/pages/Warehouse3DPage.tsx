@@ -10,6 +10,7 @@ function useQuery() {
 const Warehouse3DPage: React.FC = () => {
   const query = useQuery();
   const cellId = query.get('cellId');
+  const warehouseId = query.get('warehouseId');
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ const Warehouse3DPage: React.FC = () => {
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      <Warehouse3D highlightCellId={cellId} categories={categories} />
+      <Warehouse3D highlightCellId={cellId} categories={categories} warehouseId={warehouseId} />
     </div>
   );
 };

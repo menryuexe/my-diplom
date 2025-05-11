@@ -60,7 +60,14 @@ const WarehousesPage: React.FC = () => {
             actions={[
               <Button type="link" onClick={() => setSelectedWarehouse(warehouse)}>
                 Посмотреть
-              </Button>
+              </Button>,
+              <a
+                href={`/warehouse-3d?warehouseId=${warehouse._id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Просмотреть на карте
+              </a>
             ]}
           >
             <Card style={{ width: '100%' }}>
