@@ -125,7 +125,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       setShelves(shelvesRes.data);
       setCells(cellsRes.data.filter((cell: Cell) => cell && cell.shelf && cell.shelf.rack));
     } catch (err) {
-      setError('Ошибка при загрузке данных');
+      setError('Помилка при завантаженні даних');
     } finally {
       setLoading(false);
     }
@@ -256,7 +256,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       rackForm.resetFields();
       fetchData();
     } catch (e) {
-      message.error('Ошибка при добавлении стеллажа');
+      message.error('Помилка при додаванні стеллажа');
     }
   };
 
@@ -270,7 +270,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       sectionForm.resetFields();
       fetchData();
     } catch (e) {
-      message.error('Ошибка при обновлении секции');
+      message.error('Помилка при оновленні секції');
     }
   };
 
@@ -285,23 +285,23 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       setSelectedSectionId(null);
       fetchData();
     } catch (e) {
-      message.error('Ошибка при удалении секции');
+      message.error('Помилка при видаленні секції');
     } finally {
       setDeleteSectionLoading(false);
     }
   };
 
   if (loading) {
-    return <div>Загрузка...</div>;
+    return <div>Завантаження...</div>;
   }
 
   if (error) {
-    return <div>Ошибка: {error}</div>;
+    return <div>Помилка: {error}</div>;
   }
 
   // Проверяем наличие данных перед рендерингом
   if (!filteredRacks.length) {
-    return <div>Нет данных для отображения</div>;
+    return <div>Немає даних для відображення</div>;
   }
 
   return (
@@ -525,7 +525,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       </Canvas>
       {/* Drawer для информации о ячейке и товаре */}
       <Drawer
-        title={selectedCell ? `Ячейка: ${selectedCell.name || 'Без названия'}` : ''}
+        title={selectedCell ? `Комірка: ${selectedCell.name || 'Без назви'}` : ''}
         placement="right"
         width={400}
         onClose={() => setDrawerOpen(false)}
@@ -542,7 +542,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
                   <b>{selectedCell.product.name}</b>
                   <br />
                   <Tag color="blue">
-                    Категория: {
+                    Категорія: {
                       selectedCell.product && (
                         typeof selectedCell.product.category === 'object'
                           ? selectedCell.product.category?.name
@@ -552,7 +552,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
                   </Tag>
                 </>
               ) : (
-                <Tag color="default">Пусто</Tag>
+                <Tag color="default">Порожньо</Tag>
               )}
             </Descriptions.Item>
             {selectedCell.product && (
@@ -563,10 +563,10 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
                 <Descriptions.Item label="RFID">
                   {selectedCell.product.rfid || '—'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Количество">
+                <Descriptions.Item label="Кількість">
                   {selectedCell.product.quantity ?? '—'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Описание">
+                <Descriptions.Item label="Опис">
                   {selectedCell.product.description || '—'}
                 </Descriptions.Item>
               </>
@@ -576,7 +576,7 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       </Drawer>
       {/* Drawer для информации о секции */}
       <Drawer
-        title={selectedSection ? `Секция: ${selectedSection.name}` : ''}
+        title={selectedSection ? `Секція: ${selectedSection.name}` : ''}
         placement="right"
         width={380}
         onClose={() => setSectionDrawerOpen(false)}
@@ -609,46 +609,46 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
           console.log('sectionCells:', sectionCells);
           return (
             <Descriptions column={1} bordered size="small">
-              <Descriptions.Item label="Название">{selectedSection.name}</Descriptions.Item>
-              <Descriptions.Item label="Стеллажей">{sectionRacks.length}</Descriptions.Item>
-              <Descriptions.Item label="Ячеек">{totalCells}</Descriptions.Item>
-              <Descriptions.Item label="Свободно">{freeCells}</Descriptions.Item>
-              <Descriptions.Item label="Занято">{busyCells.length}</Descriptions.Item>
+              <Descriptions.Item label="Назва">{selectedSection.name}</Descriptions.Item>
+              <Descriptions.Item label="Стелажів">{sectionRacks.length}</Descriptions.Item>
+              <Descriptions.Item label="Комірок">{totalCells}</Descriptions.Item>
+              <Descriptions.Item label="Вільно">{freeCells}</Descriptions.Item>
+              <Descriptions.Item label="Зайнято">{busyCells.length}</Descriptions.Item>
             </Descriptions>
           );
         })()}
         <Space style={{ marginTop: 16, flexWrap: 'wrap' }}>
-          <Button type="primary" size="small" onClick={() => setAddRackModalOpen(true)}>Добавить стеллаж</Button>
+          <Button type="primary" size="small" onClick={() => setAddRackModalOpen(true)}>Додати стелаж</Button>
           <Button size="small" onClick={() => {
             sectionForm.setFieldsValue({ name: selectedSection?.name });
             setEditSectionModalOpen(true);
-          }}>Редактировать</Button>
+          }}>Редагувати</Button>
           <Button danger size="small" loading={deleteSectionLoading} onClick={() => {
             Modal.confirm({
-              title: 'Удалить секцию?',
-              content: 'Все стеллажи и ячейки внутри секции также будут удалены. Продолжить?',
-              okText: 'Удалить',
+              title: 'Видалити секцію?',
+              content: 'Всі стелажі та комірки всередині секції також будуть видалені. Продовжити?',
+              okText: 'Видалити',
               okType: 'danger',
-              cancelText: 'Отмена',
+              cancelText: 'Скасувати',
               onOk: handleDeleteSection
             });
-          }}>Удалить</Button>
+          }}>Видалити</Button>
         </Space>
       </Drawer>
       {/* Модалка добавления стеллажа */}
       <Modal
-        title="Добавить стеллаж"
+        title="Додати стелаж"
         open={addRackModalOpen}
         onCancel={() => setAddRackModalOpen(false)}
         onOk={() => rackForm.submit()}
-        okText="Добавить"
-        cancelText="Отмена"
+        okText="Додати"
+        cancelText="Скасувати"
       >
         <Form form={rackForm} layout="vertical" onFinish={handleAddRack}>
-          <Form.Item name="name" label="Название стеллажа" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва стелажа" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="shelfCount" label="Количество полок" rules={[{ required: true, message: 'Выберите количество полок' }]}> 
+          <Form.Item name="shelfCount" label="Кількість полиць" rules={[{ required: true, message: 'Оберіть кількість полиць' }]}> 
             <Select>
               {[1,2,3,4,5].map(i => (
                 <Select.Option key={i} value={i}>{i}</Select.Option>
@@ -659,15 +659,15 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
       </Modal>
       {/* Модалка редактирования секции */}
       <Modal
-        title="Редактировать секцию"
+        title="Редагувати секцію"
         open={editSectionModalOpen}
         onCancel={() => setEditSectionModalOpen(false)}
         onOk={() => sectionForm.submit()}
-        okText="Сохранить"
-        cancelText="Отмена"
+        okText="Зберегти"
+        cancelText="Скасувати"
       >
         <Form form={sectionForm} layout="vertical" onFinish={handleEditSection}>
-          <Form.Item name="name" label="Название секции" rules={[{ required: true, message: 'Введите название' }]}> <Input /> </Form.Item>
+          <Form.Item name="name" label="Назва секції" rules={[{ required: true, message: 'Введіть назву' }]}> <Input /> </Form.Item>
         </Form>
       </Modal>
     </div>

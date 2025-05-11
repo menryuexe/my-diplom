@@ -45,7 +45,7 @@ const ProductsPage: React.FC = () => {
       const res = await axios.get('/api/products');
       setProducts(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке товаров');
+      message.error('Помилка при завантаженні товарів');
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ const ProductsPage: React.FC = () => {
       const res = await axios.get('/api/categories');
       setCategories(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке категорий');
+      message.error('Помилка при завантаженні категорій');
     }
   };
 
@@ -65,7 +65,7 @@ const ProductsPage: React.FC = () => {
       const res = await axios.get('/api/cells');
       setCells(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке ячеек');
+      message.error('Помилка при завантаженні комірок');
     }
   };
 
@@ -78,12 +78,12 @@ const ProductsPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     try {
       await axios.post('/api/products', values);
-      message.success('Товар создан');
+      message.success('Товар створено');
       setModalOpen(false);
       form.resetFields();
       fetchProducts();
     } catch (err) {
-      message.error('Ошибка при создании товара');
+      message.error('Помилка при створенні товару');
     }
   };
 
@@ -101,24 +101,24 @@ const ProductsPage: React.FC = () => {
     if (!selectedProduct) return;
     try {
       await axios.put(`/api/products/${selectedProduct._id}`, values);
-      message.success('Товар обновлен');
+      message.success('Товар оновлено');
       setModalOpen(false);
       setEditMode(false);
       setSelectedProduct(null);
       form.resetFields();
       fetchProducts();
     } catch (err) {
-      message.error('Ошибка при обновлении товара');
+      message.error('Помилка при оновленні товару');
     }
   };
 
   const handleDelete = async (product: Product) => {
     try {
       await axios.delete(`/api/products/${product._id}`);
-      message.success('Товар удален');
+      message.success('Товар видалено');
       fetchProducts();
     } catch (err) {
-      message.error('Ошибка при удалении товара');
+      message.error('Помилка при видаленні товару');
     }
   };
 
@@ -148,23 +148,23 @@ const ProductsPage: React.FC = () => {
     if (cell) {
       setHighlightCellId(cell._id);
     } else {
-      message.info('Ячейка для этого товара не найдена');
+      message.info('Комірку для цього товару не знайдено');
     }
   };
 
   const columns = [
-    { title: 'Название', dataIndex: 'name', key: 'name', sorter: (a: Product, b: Product) => a.name.localeCompare(b.name) },
-    { title: 'Категория', dataIndex: ['category', 'name'], key: 'category', sorter: (a: Product, b: Product) => {
+    { title: 'Назва', dataIndex: 'name', key: 'name', sorter: (a: Product, b: Product) => a.name.localeCompare(b.name) },
+    { title: 'Категорія', dataIndex: ['category', 'name'], key: 'category', sorter: (a: Product, b: Product) => {
       const aName = typeof a.category === 'object' && a.category ? (a.category as Category).name : '';
       const bName = typeof b.category === 'object' && b.category ? (b.category as Category).name : '';
       return aName.localeCompare(bName);
     }, render: (_: any, record: Product) => (typeof record.category === 'object' && record.category ? (record.category as Category).name : '—') },
     { title: 'Штрихкод', dataIndex: 'barcode', key: 'barcode', sorter: (a: Product, b: Product) => a.barcode.localeCompare(b.barcode) },
     { title: 'RFID', dataIndex: 'rfid', key: 'rfid', sorter: (a: Product, b: Product) => a.rfid.localeCompare(b.rfid) },
-    { title: 'Количество', dataIndex: 'quantity', key: 'quantity', sorter: (a: Product, b: Product) => a.quantity - b.quantity },
-    { title: 'Описание', dataIndex: 'description', key: 'description' },
+    { title: 'Кількість', dataIndex: 'quantity', key: 'quantity', sorter: (a: Product, b: Product) => a.quantity - b.quantity },
+    { title: 'Опис', dataIndex: 'description', key: 'description' },
     {
-      title: 'Показать на плане',
+      title: 'Показати на мапі',
       key: 'showOnPlan',
       render: (_: any, record: Product) => {
         const cell = cells.find(cell => {
@@ -180,27 +180,27 @@ const ProductsPage: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Показать на плане
+            Показати на мапі
           </a>
         ) : (
-          <span style={{ color: '#aaa' }}>Нет ячейки</span>
+          <span style={{ color: '#aaa' }}>Немає комірки</span>
         );
       },
     },
     {
-      title: 'Действия',
+      title: 'Дії',
       key: 'actions',
       render: (_: any, record: Product) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редактировать</Button>
+          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редагувати</Button>
           <Popconfirm
-            title="Удалить товар?"
-            description="Вы уверены, что хотите удалить этот товар?"
+            title="Видалити товар?"
+            description="Ви впевнені, що хочете видалити цей товар?"
             onConfirm={() => handleDelete(record)}
-            okText="Да"
-            cancelText="Нет"
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button type="link" danger>Удалить</Button>
+            <Button type="link" danger>Видалити</Button>
           </Popconfirm>
         </>
       ),
@@ -210,14 +210,14 @@ const ProductsPage: React.FC = () => {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2>Товары</h2>
+        <h2>Товари</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedProduct(null); }}>
-          Создать товар
+          Створити товар
         </Button>
       </div>
       <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
         <Input.Search
-          placeholder="Поиск по названию"
+          placeholder="Пошук за назвою"
           allowClear
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -225,7 +225,7 @@ const ProductsPage: React.FC = () => {
         />
         <Select
           allowClear
-          placeholder="Фильтр по категории"
+          placeholder="Фільтр за категорією"
           value={categoryFilter}
           onChange={value => setCategoryFilter(value)}
           style={{ width: 180 }}
@@ -235,14 +235,14 @@ const ProductsPage: React.FC = () => {
           ))}
         </Select>
         <Input
-          placeholder="Фильтр по RFID"
+          placeholder="Фільтр за RFID"
           allowClear
           value={rfidFilter}
           onChange={e => setRfidFilter(e.target.value)}
           style={{ width: 150 }}
         />
         <Input
-          placeholder="Фильтр по штрихкоду"
+          placeholder="Фільтр за штрихкодом"
           allowClear
           value={barcodeFilter}
           onChange={e => setBarcodeFilter(e.target.value)}
@@ -257,33 +257,33 @@ const ProductsPage: React.FC = () => {
         pagination={{ pageSize: 10, showSizeChanger: true, pageSizeOptions: [5, 10, 20, 50] }}
       />
       <Modal
-        title={editMode ? 'Редактировать товар' : 'Создать товар'}
+        title={editMode ? 'Редагувати товар' : 'Створити товар'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedProduct(null); form.resetFields(); }}
         onOk={() => form.submit()}
-        okText={editMode ? 'Сохранить' : 'Создать'}
+        okText={editMode ? 'Зберегти' : 'Створити'}
       >
         <Form form={form} layout="vertical" onFinish={editMode ? handleUpdate : handleCreate}>
-          <Form.Item name="name" label="Название товара" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва товару" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="category" label="Категория" rules={[{ required: true, message: 'Выберите категорию' }]}> 
-            <Select placeholder="Выберите категорию">
+          <Form.Item name="category" label="Категорія" rules={[{ required: true, message: 'Оберіть категорію' }]}> 
+            <Select placeholder="Оберіть категорію">
               {categories.map(cat => (
                 <Select.Option key={cat._id} value={cat._id}>{cat.name}</Select.Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="barcode" label="Штрихкод" rules={[{ required: true, message: 'Введите штрихкод' }]}> 
+          <Form.Item name="barcode" label="Штрихкод" rules={[{ required: true, message: 'Введіть штрихкод' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="rfid" label="RFID" rules={[{ required: true, message: 'Введите RFID' }]}> 
+          <Form.Item name="rfid" label="RFID" rules={[{ required: true, message: 'Введіть RFID' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="quantity" label="Количество" rules={[{ required: true, message: 'Введите количество' }]}> 
+          <Form.Item name="quantity" label="Кількість" rules={[{ required: true, message: 'Введіть кількість' }]}> 
             <Input type="number" min={1} />
           </Form.Item>
-          <Form.Item name="description" label="Описание">
+          <Form.Item name="description" label="Опис">
             <Input.TextArea rows={3} />
           </Form.Item>
         </Form>

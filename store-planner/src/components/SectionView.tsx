@@ -32,7 +32,7 @@ export const SectionView: React.FC<SectionViewProps> = ({ section, onShelfClick,
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5">{section.name}</Typography>
         <Button variant="contained" onClick={onBack}>
-          Back to Store
+          Назад до складу
         </Button>
       </Box>
       <GridContainer>
@@ -51,7 +51,7 @@ export const SectionView: React.FC<SectionViewProps> = ({ section, onShelfClick,
             >
               <Typography variant="h6">{shelf.name}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {shelf.products.length} products
+                {shelf.products.length} товарів
               </Typography>
             </Paper>
           </GridItem>

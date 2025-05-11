@@ -22,7 +22,7 @@ const WarehousesPage: React.FC = () => {
       const res = await axios.get('/api/warehouses');
       setWarehouses(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке складов');
+      message.error('Помилка при завантаженні складів');
     } finally {
       setLoading(false);
     }
@@ -35,21 +35,21 @@ const WarehousesPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     try {
       await axios.post('/api/warehouses', { ...values, cells: [] });
-      message.success('Склад создан');
+      message.success('Склад створено');
       setModalOpen(false);
       form.resetFields();
       fetchWarehouses();
     } catch (err) {
-      message.error('Ошибка при создании склада');
+      message.error('Помилка при створенні складу');
     }
   };
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2>Склады</h2>
+        <h2>Склади</h2>
         <Button type="primary" onClick={() => setModalOpen(true)}>
-          Создать склад
+          Створити склад
         </Button>
       </div>
       <List
@@ -59,14 +59,14 @@ const WarehousesPage: React.FC = () => {
           <List.Item
             actions={[
               <Button type="link" onClick={() => setSelectedWarehouse(warehouse)}>
-                Посмотреть
+                Переглянути
               </Button>,
               <a
                 href={`/warehouse-3d?warehouseId=${warehouse._id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Просмотреть на карте
+                Переглянути на мапі
               </a>
             ]}
           >
@@ -79,17 +79,17 @@ const WarehousesPage: React.FC = () => {
       />
 
       <Modal
-        title="Создать склад"
+        title="Створити склад"
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         onOk={() => form.submit()}
-        okText="Создать"
+        okText="Створити"
       >
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="name" label="Название склада" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва складу" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="description" label="Описание склада">
+          <Form.Item name="description" label="Опис складу">
             <Input.TextArea rows={3} />
           </Form.Item>
         </Form>
@@ -101,8 +101,8 @@ const WarehousesPage: React.FC = () => {
         onCancel={() => setSelectedWarehouse(null)}
         footer={null}
       >
-        <p><b>Описание:</b> {selectedWarehouse?.description}</p>
-        <p><b>Количество ячеек:</b> {selectedWarehouse?.cells.length}</p>
+        <p><b>Опис:</b> {selectedWarehouse?.description}</p>
+        <p><b>Кількість комірок:</b> {selectedWarehouse?.cells.length}</p>
         {/* Здесь можно добавить Warehouse3D для выбранного склада */}
       </Modal>
     </div>

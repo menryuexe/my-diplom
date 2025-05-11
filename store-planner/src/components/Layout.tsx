@@ -17,42 +17,42 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     {
       key: '/',
       icon: <HomeOutlined />,
-      label: <Link to="/">Главная</Link>,
+      label: <Link to="/">Головна</Link>,
     },
     {
       key: '/warehouses',
       icon: <DatabaseOutlined />,
-      label: <Link to="/warehouses">Склады</Link>,
+      label: <Link to="/warehouses">Склади</Link>,
     },
     {
       key: '/sections',
       icon: <PartitionOutlined />,
-      label: <Link to="/sections">Секции</Link>,
+      label: <Link to="/sections">Секції</Link>,
     },
     {
       key: '/products',
       icon: <TagsOutlined />,
-      label: <Link to="/products">Товары</Link>,
+      label: <Link to="/products">Товари</Link>,
     },
     {
       key: '/categories',
       icon: <AppstoreOutlined />,
-      label: <Link to="/categories">Категории</Link>,
+      label: <Link to="/categories">Категорії</Link>,
     },
     {
       key: '/racks',
       icon: <BarsOutlined />,
-      label: <Link to="/racks">Стеллажи</Link>,
+      label: <Link to="/racks">Стелажі</Link>,
     },
     {
       key: '/shelves',
       icon: <TableOutlined />,
-      label: <Link to="/shelves">Полки</Link>,
+      label: <Link to="/shelves">Полиці</Link>,
     },
     {
       key: '/cells',
       icon: <AppstoreAddOutlined />,
-      label: <Link to="/cells">Ячейки</Link>,
+      label: <Link to="/cells">Комірки</Link>,
     },
   ];
 
@@ -60,7 +60,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ padding: 0, background: '#fff' }}>
         <div style={{ padding: '0 24px', fontSize: '20px', fontWeight: 'bold' }}>
-          Система управления складом
+          Система управління складом
         </div>
       </Header>
       <Layout>

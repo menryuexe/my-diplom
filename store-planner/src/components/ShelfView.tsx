@@ -31,7 +31,7 @@ export const ShelfView: React.FC<ShelfViewProps> = ({ shelf, onBack }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5">{shelf.name}</Typography>
         <Button variant="contained" onClick={onBack}>
-          Back to Section
+          Назад до секції
         </Button>
       </Box>
       <GridContainer>

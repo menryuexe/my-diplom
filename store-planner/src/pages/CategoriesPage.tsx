@@ -22,7 +22,7 @@ const CategoriesPage: React.FC = () => {
       const res = await axios.get('/api/categories');
       setCategories(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке категорий');
+      message.error('Помилка при завантаженні категорій');
     } finally {
       setLoading(false);
     }
@@ -35,12 +35,12 @@ const CategoriesPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     try {
       await axios.post('/api/categories', values);
-      message.success('Категория создана');
+      message.success('Категорію створено');
       setModalOpen(false);
       form.resetFields();
       fetchCategories();
     } catch (err) {
-      message.error('Ошибка при создании категории');
+      message.error('Помилка при створенні категорії');
     }
   };
 
@@ -55,24 +55,24 @@ const CategoriesPage: React.FC = () => {
     if (!selectedCategory) return;
     try {
       await axios.put(`/api/categories/${selectedCategory._id}`, values);
-      message.success('Категория обновлена');
+      message.success('Категорію оновлено');
       setModalOpen(false);
       setEditMode(false);
       setSelectedCategory(null);
       form.resetFields();
       fetchCategories();
     } catch (err) {
-      message.error('Ошибка при обновлении категории');
+      message.error('Помилка при оновленні категорії');
     }
   };
 
   const handleDelete = async (category: Category) => {
     try {
       await axios.delete(`/api/categories/${category._id}`);
-      message.success('Категория удалена');
+      message.success('Категорію видалено');
       fetchCategories();
     } catch (err) {
-      message.error('Ошибка при удалении категории');
+      message.error('Помилка при видаленні категорії');
     }
   };
 
@@ -80,21 +80,21 @@ const CategoriesPage: React.FC = () => {
   const filteredCategories = categories.filter(cat => cat.name.toLowerCase().includes(search.toLowerCase()));
 
   const columns = [
-    { title: 'Название', dataIndex: 'name', key: 'name' },
+    { title: 'Назва', dataIndex: 'name', key: 'name' },
     {
-      title: 'Действия',
+      title: 'Дії',
       key: 'actions',
       render: (_: any, record: Category) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редактировать</Button>
+          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редагувати</Button>
           <Popconfirm
-            title="Удалить категорию?"
-            description="Вы уверены, что хотите удалить эту категорию?"
+            title="Видалити категорію?"
+            description="Ви впевнені, що хочете видалити цю категорію?"
             onConfirm={() => handleDelete(record)}
-            okText="Да"
-            cancelText="Нет"
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button type="link" danger>Удалить</Button>
+            <Button type="link" danger>Видалити</Button>
           </Popconfirm>
         </>
       ),
@@ -104,14 +104,14 @@ const CategoriesPage: React.FC = () => {
   return (
     <div style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2>Категории</h2>
+        <h2>Категорії</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedCategory(null); }}>
-          Создать категорию
+          Створити категорію
         </Button>
       </div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
         <Input.Search
-          placeholder="Поиск по названию"
+          placeholder="Пошук за назвою"
           allowClear
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -126,14 +126,14 @@ const CategoriesPage: React.FC = () => {
         pagination={{ pageSize: 8, showSizeChanger: true, pageSizeOptions: [5, 8, 20, 50] }}
       />
       <Modal
-        title={editMode ? 'Редактировать категорию' : 'Создать категорию'}
+        title={editMode ? 'Редагувати категорію' : 'Створити категорію'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedCategory(null); form.resetFields(); }}
         onOk={() => form.submit()}
-        okText={editMode ? 'Сохранить' : 'Создать'}
+        okText={editMode ? 'Зберегти' : 'Створити'}
       >
         <Form form={form} layout="vertical" onFinish={editMode ? handleUpdate : handleCreate}>
-          <Form.Item name="name" label="Название категории" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва категорії" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
         </Form>

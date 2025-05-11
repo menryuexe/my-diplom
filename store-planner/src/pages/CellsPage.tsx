@@ -43,7 +43,7 @@ const CellsPage: React.FC = () => {
       const res = await axios.get('/api/cells');
       setCells(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке ячеек');
+      message.error('Помилка при завантаженні комірок');
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const CellsPage: React.FC = () => {
       const res = await axios.get('/api/shelves');
       setShelves(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке полок');
+      message.error('Помилка при завантаженні полиць');
     }
   };
 
@@ -63,7 +63,7 @@ const CellsPage: React.FC = () => {
       const res = await axios.get('/api/products');
       setProducts(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке товаров');
+      message.error('Помилка при завантаженні товарів');
     }
   };
 
@@ -72,7 +72,7 @@ const CellsPage: React.FC = () => {
       const res = await axios.get('/api/racks');
       setRacks(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке стеллажей');
+      message.error('Помилка при завантаженні стелажів');
     }
   };
 
@@ -86,13 +86,13 @@ const CellsPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     try {
       await axios.post('/api/cells', values);
-      message.success('Ячейка создана');
+      message.success('Комірку створено');
       setModalOpen(false);
       form.resetFields();
       setSelectedRackId(null);
       fetchCells();
     } catch (err) {
-      message.error('Ошибка при создании ячейки');
+      message.error('Помилка при створенні комірки');
     }
   };
 
@@ -118,31 +118,31 @@ const CellsPage: React.FC = () => {
     if (!selectedCell) return;
     try {
       await axios.put(`/api/cells/${selectedCell._id}`, values);
-      message.success('Ячейка обновлена');
+      message.success('Комірку оновлено');
       setModalOpen(false);
       setEditMode(false);
       setSelectedCell(null);
       form.resetFields();
       fetchCells();
     } catch (err) {
-      message.error('Ошибка при обновлении ячейки');
+      message.error('Помилка при оновленні комірки');
     }
   };
 
   const handleDelete = async (cell: Cell) => {
     try {
       await axios.delete(`/api/cells/${cell._id}`);
-      message.success('Ячейка удалена');
+      message.success('Комірку видалено');
       fetchCells();
     } catch (err) {
-      message.error('Ошибка при удалении ячейки');
+      message.error('Помилка при видаленні комірки');
     }
   };
 
   const columns = [
-    { title: 'Название', dataIndex: 'name', key: 'name' },
+    { title: 'Назва', dataIndex: 'name', key: 'name' },
     {
-      title: 'Полка',
+      title: 'Полиця',
       dataIndex: ['shelf', 'name'],
       key: 'shelf',
       render: (_: any, record: Cell) =>
@@ -152,19 +152,19 @@ const CellsPage: React.FC = () => {
     },
     { title: 'Товар', dataIndex: ['product', 'name'], key: 'product', render: (_: any, record: Cell) => record.product && typeof record.product === 'object' ? (record.product as Product).name : '' },
     {
-      title: 'Действия',
+      title: 'Дії',
       key: 'actions',
       render: (_: any, record: Cell) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редактировать</Button>
+          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редагувати</Button>
           <Popconfirm
-            title="Удалить ячейку?"
-            description="Вы уверены, что хотите удалить эту ячейку?"
+            title="Видалити комірку?"
+            description="Ви впевнені, що хочете видалити цю комірку?"
             onConfirm={() => handleDelete(record)}
-            okText="Да"
-            cancelText="Нет"
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button type="link" danger>Удалить</Button>
+            <Button type="link" danger>Видалити</Button>
           </Popconfirm>
         </>
       ),
@@ -174,9 +174,9 @@ const CellsPage: React.FC = () => {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2>Ячейки</h2>
+        <h2>Комірки</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedCell(null); setSelectedRackId(null); }}>
-          Создать ячейку
+          Створити комірку
         </Button>
       </div>
       <Table
@@ -186,19 +186,19 @@ const CellsPage: React.FC = () => {
         rowKey="_id"
       />
       <Modal
-        title={editMode ? 'Редактировать ячейку' : 'Создать ячейку'}
+        title={editMode ? 'Редагувати комірку' : 'Створити комірку'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedCell(null); form.resetFields(); setSelectedRackId(null); }}
         onOk={() => form.submit()}
-        okText={editMode ? 'Сохранить' : 'Создать'}
+        okText={editMode ? 'Зберегти' : 'Створити'}
       >
         <Form form={form} layout="vertical" onFinish={editMode ? handleUpdate : handleCreate}>
-          <Form.Item name="name" label="Название ячейки" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва комірки" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="rack" label="Стеллаж" rules={[{ required: true, message: 'Выберите стеллаж' }]}> 
+          <Form.Item name="rack" label="Стелаж" rules={[{ required: true, message: 'Оберіть стелаж' }]}> 
             <Select
-              placeholder="Выберите стеллаж"
+              placeholder="Оберіть стелаж"
               onChange={rackId => {
                 setSelectedRackId(rackId);
                 form.setFieldsValue({ shelf: undefined });
@@ -210,8 +210,8 @@ const CellsPage: React.FC = () => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="shelf" label="Полка" rules={[{ required: true, message: 'Выберите полку' }]}> 
-            <Select placeholder="Выберите полку" disabled={!selectedRackId}>
+          <Form.Item name="shelf" label="Полиця" rules={[{ required: true, message: 'Оберіть полицю' }]}> 
+            <Select placeholder="Оберіть полицю" disabled={!selectedRackId}>
               {shelves.filter(s => {
                 const rackId = typeof s.rack === 'object' ? s.rack._id : s.rack;
                 return rackId === selectedRackId;
@@ -221,7 +221,7 @@ const CellsPage: React.FC = () => {
             </Select>
           </Form.Item>
           <Form.Item name="product" label="Товар">
-            <Select placeholder="Выберите товар (необязательно)" allowClear>
+            <Select placeholder="Оберіть товар (необов'язково)" allowClear>
               {products.map(p => (
                 <Select.Option key={p._id} value={p._id}>{p.name}</Select.Option>
               ))}

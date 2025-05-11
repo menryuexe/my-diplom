@@ -28,7 +28,7 @@ const ShelvesPage: React.FC = () => {
       const res = await axios.get('/api/shelves');
       setShelves(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке полок');
+      message.error('Помилка при завантаженні полиць');
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ const ShelvesPage: React.FC = () => {
       const res = await axios.get('/api/racks');
       setRacks(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке стеллажей');
+      message.error('Помилка при завантаженні стелажів');
     }
   };
 
@@ -51,12 +51,12 @@ const ShelvesPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     try {
       await axios.post('/api/shelves', values);
-      message.success('Полка создана');
+      message.success('Полицю створено');
       setModalOpen(false);
       form.resetFields();
       fetchShelves();
     } catch (err) {
-      message.error('Ошибка при создании полки');
+      message.error('Помилка при створенні полиці');
     }
   };
 
@@ -74,31 +74,31 @@ const ShelvesPage: React.FC = () => {
     if (!selectedShelf) return;
     try {
       await axios.put(`/api/shelves/${selectedShelf._id}`, values);
-      message.success('Полка обновлена');
+      message.success('Полицю оновлено');
       setModalOpen(false);
       setEditMode(false);
       setSelectedShelf(null);
       form.resetFields();
       fetchShelves();
     } catch (err) {
-      message.error('Ошибка при обновлении полки');
+      message.error('Помилка при оновленні полиці');
     }
   };
 
   const handleDelete = async (shelf: Shelf) => {
     try {
       await axios.delete(`/api/shelves/${shelf._id}`);
-      message.success('Полка удалена');
+      message.success('Полицю видалено');
       fetchShelves();
     } catch (err) {
-      message.error('Ошибка при удалении полки');
+      message.error('Помилка при видаленні полиці');
     }
   };
 
   const columns = [
-    { title: 'Название', dataIndex: 'name', key: 'name' },
+    { title: 'Назва', dataIndex: 'name', key: 'name' },
     {
-      title: 'Стеллаж',
+      title: 'Стелаж',
       dataIndex: ['rack', 'name'],
       key: 'rack',
       render: (_: any, record: Shelf) =>
@@ -107,19 +107,19 @@ const ShelvesPage: React.FC = () => {
           : '—',
     },
     {
-      title: 'Действия',
+      title: 'Дії',
       key: 'actions',
       render: (_: any, record: Shelf) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редактировать</Button>
+          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редагувати</Button>
           <Popconfirm
-            title="Удалить полку?"
-            description="Вы уверены, что хотите удалить эту полку?"
+            title="Видалити полицю?"
+            description="Ви впевнені, що хочете видалити цю полицю?"
             onConfirm={() => handleDelete(record)}
-            okText="Да"
-            cancelText="Нет"
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button type="link" danger>Удалить</Button>
+            <Button type="link" danger>Видалити</Button>
           </Popconfirm>
         </>
       ),
@@ -129,9 +129,9 @@ const ShelvesPage: React.FC = () => {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2>Полки</h2>
+        <h2>Полиці</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedShelf(null); }}>
-          Создать полку
+          Створити полицю
         </Button>
       </div>
       <Table
@@ -141,18 +141,18 @@ const ShelvesPage: React.FC = () => {
         rowKey="_id"
       />
       <Modal
-        title={editMode ? 'Редактировать полку' : 'Создать полку'}
+        title={editMode ? 'Редагувати полицю' : 'Створити полицю'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedShelf(null); form.resetFields(); }}
         onOk={() => form.submit()}
-        okText={editMode ? 'Сохранить' : 'Создать'}
+        okText={editMode ? 'Зберегти' : 'Створити'}
       >
         <Form form={form} layout="vertical" onFinish={editMode ? handleUpdate : handleCreate}>
-          <Form.Item name="name" label="Название полки" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва полиці" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="rack" label="Стеллаж" rules={[{ required: true, message: 'Выберите стеллаж' }]}> 
-            <Select placeholder="Выберите стеллаж">
+          <Form.Item name="rack" label="Стелаж" rules={[{ required: true, message: 'Оберіть стелаж' }]}> 
+            <Select placeholder="Оберіть стелаж">
               {racks.map(r => (
                 <Select.Option key={r._id} value={r._id}>{r.name}</Select.Option>
               ))}

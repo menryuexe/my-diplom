@@ -30,7 +30,7 @@ const RacksPage: React.FC = () => {
       const res = await axios.get('/api/racks');
       setRacks(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке стеллажей');
+      message.error('Помилка при завантаженні стелажів');
     } finally {
       setLoading(false);
     }
@@ -41,7 +41,7 @@ const RacksPage: React.FC = () => {
       const res = await axios.get('/api/sections');
       setSections(res.data);
     } catch (err) {
-      message.error('Ошибка при загрузке секций');
+      message.error('Помилка при завантаженні секцій');
     }
   };
 
@@ -63,13 +63,13 @@ const RacksPage: React.FC = () => {
         level: i
       }));
       await Promise.all(shelvesToCreate.map(shelf => axios.post('/api/shelves', shelf)));
-      message.success('Стеллаж и полки созданы');
+      message.success('Стелаж і полиці створено');
       setModalOpen(false);
       form.resetFields();
       setShelfCount(1);
       fetchRacks();
     } catch (err) {
-      message.error('Ошибка при создании стеллажа или полок');
+      message.error('Помилка при створенні стелажа або полиць');
     }
   };
 
@@ -87,44 +87,44 @@ const RacksPage: React.FC = () => {
     if (!selectedRack) return;
     try {
       await axios.put(`/api/racks/${selectedRack._id}`, values);
-      message.success('Стеллаж обновлен');
+      message.success('Стелаж оновлено');
       setModalOpen(false);
       setEditMode(false);
       setSelectedRack(null);
       form.resetFields();
       fetchRacks();
     } catch (err) {
-      message.error('Ошибка при обновлении стеллажа');
+      message.error('Помилка при оновленні стелажа');
     }
   };
 
   const handleDelete = async (rack: Rack) => {
     try {
       await axios.delete(`/api/racks/${rack._id}`);
-      message.success('Стеллаж удален');
+      message.success('Стелаж видалено');
       fetchRacks();
     } catch (err) {
-      message.error('Ошибка при удалении стеллажа');
+      message.error('Помилка при видаленні стелажа');
     }
   };
 
   const columns = [
-    { title: 'Название', dataIndex: 'name', key: 'name' },
-    { title: 'Секция', dataIndex: ['section', 'name'], key: 'section', render: (_: any, record: Rack) => typeof record.section === 'object' ? (record.section as Section).name : '' },
+    { title: 'Назва', dataIndex: 'name', key: 'name' },
+    { title: 'Секція', dataIndex: ['section', 'name'], key: 'section', render: (_: any, record: Rack) => typeof record.section === 'object' ? (record.section as Section).name : '' },
     {
-      title: 'Действия',
+      title: 'Дії',
       key: 'actions',
       render: (_: any, record: Rack) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редактировать</Button>
+          <Button type="link" onClick={() => handleEdit(record)} style={{ paddingLeft: 0 }}>Редагувати</Button>
           <Popconfirm
-            title="Удалить стеллаж?"
-            description="Внимание! При удалении стеллажа будут удалены все его полки. Товары, находящиеся в ячейках, удалены не будут. Вы уверены, что хотите удалить этот стеллаж?"
+            title="Видалити стелаж?"
+            description="Увага! При видаленні стелажа будуть видалені всі його полиці. Товари, що знаходяться у комірках, видалені не будуть. Ви впевнені, що хочете видалити цей стелаж?"
             onConfirm={() => handleDelete(record)}
-            okText="Да"
-            cancelText="Нет"
+            okText="Так"
+            cancelText="Ні"
           >
-            <Button type="link" danger>Удалить</Button>
+            <Button type="link" danger>Видалити</Button>
           </Popconfirm>
         </>
       ),
@@ -134,9 +134,9 @@ const RacksPage: React.FC = () => {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2>Стеллажи</h2>
+        <h2>Стелажі</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedRack(null); setShelfCount(1); }}>
-          Создать стеллаж
+          Створити стелаж
         </Button>
       </div>
       <Table
@@ -146,24 +146,24 @@ const RacksPage: React.FC = () => {
         rowKey="_id"
       />
       <Modal
-        title={editMode ? 'Редактировать стеллаж' : 'Создать стеллаж'}
+        title={editMode ? 'Редагувати стелаж' : 'Створити стелаж'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditMode(false); setSelectedRack(null); form.resetFields(); setShelfCount(1); }}
         onOk={() => form.submit()}
-        okText={editMode ? 'Сохранить' : 'Создать'}
+        okText={editMode ? 'Зберегти' : 'Створити'}
       >
         <Form form={form} layout="vertical" onFinish={editMode ? handleUpdate : handleCreate}>
-          <Form.Item name="name" label="Название стеллажа" rules={[{ required: true, message: 'Введите название' }]}> 
+          <Form.Item name="name" label="Назва стелажа" rules={[{ required: true, message: 'Введіть назву' }]}> 
             <Input />
           </Form.Item>
-          <Form.Item name="section" label="Секция" rules={[{ required: true, message: 'Выберите секцию' }]}> 
-            <Select placeholder="Выберите секцию">
+          <Form.Item name="section" label="Секція" rules={[{ required: true, message: 'Оберіть секцію' }]}> 
+            <Select placeholder="Оберіть секцію">
               {sections.map(s => (
                 <Select.Option key={s._id} value={s._id}>{s.name}</Select.Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Количество полок (1-5)" required>
+          <Form.Item label="Кількість полиць (1-5)" required>
             <Select value={shelfCount} onChange={setShelfCount}>
               {[1,2,3,4,5].map(n => (
                 <Select.Option key={n} value={n}>{n}</Select.Option>
