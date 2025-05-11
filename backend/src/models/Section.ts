@@ -6,11 +6,17 @@ import mongoose, { Schema, Document } from 'mongoose';
  *   schemas:
  *     Section:
  *       type: object
+ *       description: |
+ *         Секція (section) — це логічна зона складу, яка містить стелажі.
  *       properties:
  *         name:
  *           type: string
+ *           description: Назва секції
+ *           example: "Секція A"
  *         warehouse:
  *           type: string
+ *           description: ID складу, до якого належить секція
+ *           example: "60f7c2b8e1b1c2a1b8e1b1c2"
  */
 
 export interface ISection extends Document {

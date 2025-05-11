@@ -2,12 +2,14 @@
  * @openapi
  * /api/products:
  *   get:
- *     summary: Получить список всех товаров
+ *     summary: Отримати список усіх товарів
+ *     description: |
+ *       Товар (product) — це об'єкт, який зберігається у комірці на складі.
  *     tags:
- *       - Products
+ *       - Товари
  *     responses:
  *       200:
- *         description: Список товаров
+ *         description: Список товарів
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +17,11 @@
  *               items:
  *                 $ref: '#/components/schemas/Product'
  *   post:
- *     summary: Создать новый товар
+ *     summary: Додати новий товар
+ *     description: |
+ *       Товар (product) — це об'єкт, який зберігається у комірці на складі.
  *     tags:
- *       - Products
+ *       - Товари
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +30,18 @@
  *             $ref: '#/components/schemas/Product'
  *     responses:
  *       201:
- *         description: Товар создан
+ *         description: Товар додано
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Product'
  * /api/products/{id}:
  *   get:
- *     summary: Получить товар по ID
+ *     summary: Отримати товар за ID
+ *     description: |
+ *       Товар (product) — це об'єкт, який зберігається у комірці на складі.
  *     tags:
- *       - Products
+ *       - Товари
  *     parameters:
  *       - in: path
  *         name: id
@@ -50,9 +56,11 @@
  *             schema:
  *               $ref: '#/components/schemas/Product'
  *   put:
- *     summary: Обновить товар по ID
+ *     summary: Оновити товар за ID
+ *     description: |
+ *       Товар (product) — це об'єкт, який зберігається у комірці на складі.
  *     tags:
- *       - Products
+ *       - Товари
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +75,17 @@
  *             $ref: '#/components/schemas/Product'
  *     responses:
  *       200:
- *         description: Товар обновлен
+ *         description: Товар оновлено
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Product'
  *   delete:
- *     summary: Удалить товар по ID
+ *     summary: Видалити товар за ID
+ *     description: |
+ *       Товар (product) — це об'єкт, який зберігається у комірці на складі.
  *     tags:
- *       - Products
+ *       - Товари
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +94,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Товар удален
+ *         description: Товар видалено
  */
 import { Router } from 'express';
 import * as productController from '../controllers/productController';

@@ -2,12 +2,14 @@
  * @openapi
  * /api/warehouses:
  *   get:
- *     summary: Получить список всех складов
+ *     summary: Отримати список усіх складів
+ *     description: |
+ *       Склад (warehouse) — це фізичний склад, який містить секції.
  *     tags:
- *       - Warehouses
+ *       - Склади
  *     responses:
  *       200:
- *         description: Список складов
+ *         description: Список складів
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +17,11 @@
  *               items:
  *                 $ref: '#/components/schemas/Warehouse'
  *   post:
- *     summary: Создать новый склад
+ *     summary: Створити новий склад
+ *     description: |
+ *       Склад (warehouse) — це фізичний склад, який містить секції.
  *     tags:
- *       - Warehouses
+ *       - Склади
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +30,18 @@
  *             $ref: '#/components/schemas/Warehouse'
  *     responses:
  *       201:
- *         description: Склад создан
+ *         description: Склад створено
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Warehouse'
  * /api/warehouses/{id}:
  *   get:
- *     summary: Получить склад по ID
+ *     summary: Отримати склад за ID
+ *     description: |
+ *       Склад (warehouse) — це фізичний склад.
  *     tags:
- *       - Warehouses
+ *       - Склади
  *     parameters:
  *       - in: path
  *         name: id
@@ -50,9 +56,11 @@
  *             schema:
  *               $ref: '#/components/schemas/Warehouse'
  *   put:
- *     summary: Обновить склад по ID
+ *     summary: Оновити склад за ID
+ *     description: |
+ *       Склад (warehouse) — це фізичний склад.
  *     tags:
- *       - Warehouses
+ *       - Склади
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +75,17 @@
  *             $ref: '#/components/schemas/Warehouse'
  *     responses:
  *       200:
- *         description: Склад обновлен
+ *         description: Склад оновлено
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Warehouse'
  *   delete:
- *     summary: Удалить склад по ID
+ *     summary: Видалити склад за ID
+ *     description: |
+ *       Склад (warehouse) — це фізичний склад.
  *     tags:
- *       - Warehouses
+ *       - Склади
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +94,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Склад удален
+ *         description: Склад видалено
  */
 import { Router } from 'express';
 import * as warehouseController from '../controllers/warehouseController';

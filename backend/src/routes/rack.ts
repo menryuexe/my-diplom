@@ -2,12 +2,14 @@
  * @openapi
  * /api/racks:
  *   get:
- *     summary: Получить список всех стеллажей
+ *     summary: Отримати список усіх стелажів
+ *     description: |
+ *       Стелаж (rack) — це фізичний стелаж у секції складу. Може містити декілька полиць.
  *     tags:
- *       - Racks
+ *       - Стелажі
  *     responses:
  *       200:
- *         description: Список стеллажей
+ *         description: Список стелажів
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +17,11 @@
  *               items:
  *                 $ref: '#/components/schemas/Rack'
  *   post:
- *     summary: Создать новый стеллаж
+ *     summary: Створити новий стелаж
+ *     description: |
+ *       Стелаж (rack) — це фізичний стелаж у секції складу. Може містити декілька полиць.
  *     tags:
- *       - Racks
+ *       - Стелажі
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +30,18 @@
  *             $ref: '#/components/schemas/Rack'
  *     responses:
  *       201:
- *         description: Стеллаж создан
+ *         description: Стелаж створено
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Rack'
  * /api/racks/{id}:
  *   get:
- *     summary: Получить стеллаж по ID
+ *     summary: Отримати стелаж за ID
+ *     description: |
+ *       Стелаж (rack) — це фізичний стелаж у секції складу.
  *     tags:
- *       - Racks
+ *       - Стелажі
  *     parameters:
  *       - in: path
  *         name: id
@@ -44,15 +50,17 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Стеллаж
+ *         description: Стелаж
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Rack'
  *   put:
- *     summary: Обновить стеллаж по ID
+ *     summary: Оновити стелаж за ID
+ *     description: |
+ *       Стелаж (rack) — це фізичний стелаж у секції складу.
  *     tags:
- *       - Racks
+ *       - Стелажі
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +75,17 @@
  *             $ref: '#/components/schemas/Rack'
  *     responses:
  *       200:
- *         description: Стеллаж обновлен
+ *         description: Стелаж оновлено
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Rack'
  *   delete:
- *     summary: Удалить стеллаж по ID
+ *     summary: Видалити стелаж за ID
+ *     description: |
+ *       Стелаж (rack) — це фізичний стелаж у секції складу.
  *     tags:
- *       - Racks
+ *       - Стелажі
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +94,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Стеллаж удален
+ *         description: Стелаж видалено
  */
 import { Router } from 'express';
 import * as rackController from '../controllers/rackController';

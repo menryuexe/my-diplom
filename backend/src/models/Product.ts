@@ -4,19 +4,33 @@
  *   schemas:
  *     Product:
  *       type: object
+ *       description: |
+ *         Товар (product) — це об'єкт, який зберігається у комірці на складі.
  *       properties:
  *         name:
  *           type: string
+ *           description: Назва товару
+ *           example: "Ноутбук Lenovo"
  *         category:
  *           type: string
+ *           description: ID категорії товару
+ *           example: "60f7c2b8e1b1c2a1b8e1b1c2"
  *         barcode:
  *           type: string
+ *           description: Штрихкод товару
+ *           example: "1234567890123"
  *         rfid:
  *           type: string
+ *           description: RFID-мітка товару
+ *           example: "RFID123456"
+ *         quantity:
+ *           type: number
+ *           description: Кількість одиниць товару
+ *           example: 10
  *         description:
  *           type: string
- *         quantity:
- *           type: integer
+ *           description: Опис товару
+ *           example: "Потужний ноутбук для офісної роботи."
  */
 import mongoose, { Schema, Document } from 'mongoose';
 

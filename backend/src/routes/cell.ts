@@ -2,12 +2,15 @@
  * @openapi
  * /api/cells:
  *   get:
- *     summary: Получить список всех ячеек
+ *     summary: Отримати список усіх створених вручну комірок (cell)
+ *     description: |
+ *       Комірка (cell) — це не кожна полиця, а лише створена вручну комірка (місце для товару на полиці).
+ *       Комірки створюються вручну через форму або при додаванні товару на полицю.
  *     tags:
- *       - Cells
+ *       - Комірки
  *     responses:
  *       200:
- *         description: Список ячеек
+ *         description: Список комірок
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +18,12 @@
  *               items:
  *                 $ref: '#/components/schemas/Cell'
  *   post:
- *     summary: Создать новую ячейку
+ *     summary: Створити нову комірку (cell) вручну
+ *     description: |
+ *       Комірка (cell) — це не кожна полиця, а лише створена вручну комірка (місце для товару на полиці).
+ *       Комірки створюються вручну через форму або при додаванні товару на полицю.
  *     tags:
- *       - Cells
+ *       - Комірки
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +32,18 @@
  *             $ref: '#/components/schemas/Cell'
  *     responses:
  *       201:
- *         description: Ячейка создана
+ *         description: Комірка створена
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cell'
  * /api/cells/{id}:
  *   get:
- *     summary: Получить ячейку по ID
+ *     summary: Отримати комірку (cell) за ID
+ *     description: |
+ *       Комірка (cell) — це не кожна полиця, а лише створена вручну комірка (місце для товару на полиці).
  *     tags:
- *       - Cells
+ *       - Комірки
  *     parameters:
  *       - in: path
  *         name: id
@@ -44,15 +52,17 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Ячейка
+ *         description: Комірка
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cell'
  *   put:
- *     summary: Обновить ячейку по ID
+ *     summary: Оновити комірку (cell) за ID
+ *     description: |
+ *       Комірка (cell) — це не кожна полиця, а лише створена вручну комірка (місце для товару на полиці).
  *     tags:
- *       - Cells
+ *       - Комірки
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +77,17 @@
  *             $ref: '#/components/schemas/Cell'
  *     responses:
  *       200:
- *         description: Ячейка обновлена
+ *         description: Комірка оновлена
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cell'
  *   delete:
- *     summary: Удалить ячейку по ID
+ *     summary: Видалити комірку (cell) за ID
+ *     description: |
+ *       Комірка (cell) — це не кожна полиця, а лише створена вручну комірка (місце для товару на полиці).
  *     tags:
- *       - Cells
+ *       - Комірки
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +96,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Ячейка удалена
+ *         description: Комірка видалена
  */
 import { Router } from 'express';
 import * as cellController from '../controllers/cellController';

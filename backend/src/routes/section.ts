@@ -2,12 +2,14 @@
  * @openapi
  * /api/sections:
  *   get:
- *     summary: Получить список всех секций
+ *     summary: Отримати список усіх секцій
+ *     description: |
+ *       Секція (section) — це логічна зона складу, яка містить стелажі.
  *     tags:
- *       - Sections
+ *       - Секції
  *     responses:
  *       200:
- *         description: Список секций
+ *         description: Список секцій
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +17,11 @@
  *               items:
  *                 $ref: '#/components/schemas/Section'
  *   post:
- *     summary: Создать новую секцию
+ *     summary: Створити нову секцію
+ *     description: |
+ *       Секція (section) — це логічна зона складу, яка містить стелажі.
  *     tags:
- *       - Sections
+ *       - Секції
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +30,18 @@
  *             $ref: '#/components/schemas/Section'
  *     responses:
  *       201:
- *         description: Секция создана
+ *         description: Секція створена
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Section'
  * /api/sections/{id}:
  *   get:
- *     summary: Получить секцию по ID
+ *     summary: Отримати секцію за ID
+ *     description: |
+ *       Секція (section) — це логічна зона складу.
  *     tags:
- *       - Sections
+ *       - Секції
  *     parameters:
  *       - in: path
  *         name: id
@@ -44,15 +50,17 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Секция
+ *         description: Секція
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Section'
  *   put:
- *     summary: Обновить секцию по ID
+ *     summary: Оновити секцію за ID
+ *     description: |
+ *       Секція (section) — це логічна зона складу.
  *     tags:
- *       - Sections
+ *       - Секції
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +75,17 @@
  *             $ref: '#/components/schemas/Section'
  *     responses:
  *       200:
- *         description: Секция обновлена
+ *         description: Секція оновлена
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Section'
  *   delete:
- *     summary: Удалить секцию по ID
+ *     summary: Видалити секцію за ID
+ *     description: |
+ *       Секція (section) — це логічна зона складу.
  *     tags:
- *       - Sections
+ *       - Секції
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +94,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Секция удалена
+ *         description: Секція видалена
  */
 import { Router } from 'express';
 import * as sectionController from '../controllers/sectionController';

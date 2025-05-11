@@ -4,11 +4,17 @@
  *   schemas:
  *     Rack:
  *       type: object
+ *       description: |
+ *         Стелаж (rack) — це фізичний стелаж у секції складу. Може містити декілька полиць.
  *       properties:
  *         name:
  *           type: string
+ *           description: Назва стелажа
+ *           example: "Стелаж №1"
  *         section:
  *           type: string
+ *           description: ID секції, до якої належить стелаж
+ *           example: "60f7c2b8e1b1c2a1b8e1b1c2"
  *         position:
  *           type: object
  *           properties:

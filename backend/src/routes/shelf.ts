@@ -2,12 +2,14 @@
  * @openapi
  * /api/shelves:
  *   get:
- *     summary: Получить список всех полок
+ *     summary: Отримати список усіх полиць
+ *     description: |
+ *       Полиця (shelf) — це фізична полиця на стелажі. Полиці створюються автоматично при створенні стелажа (користувач задає кількість).
  *     tags:
- *       - Shelves
+ *       - Полиці
  *     responses:
  *       200:
- *         description: Список полок
+ *         description: Список полиць
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +17,11 @@
  *               items:
  *                 $ref: '#/components/schemas/Shelf'
  *   post:
- *     summary: Создать новую полку
+ *     summary: Створити нову полицю
+ *     description: |
+ *       Полиця (shelf) — це фізична полиця на стелажі. Полиці створюються автоматично при створенні стелажа (користувач задає кількість).
  *     tags:
- *       - Shelves
+ *       - Полиці
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +30,18 @@
  *             $ref: '#/components/schemas/Shelf'
  *     responses:
  *       201:
- *         description: Полка создана
+ *         description: Полиця створена
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Shelf'
  * /api/shelves/{id}:
  *   get:
- *     summary: Получить полку по ID
+ *     summary: Отримати полицю за ID
+ *     description: |
+ *       Полиця (shelf) — це фізична полиця на стелажі.
  *     tags:
- *       - Shelves
+ *       - Полиці
  *     parameters:
  *       - in: path
  *         name: id
@@ -44,15 +50,17 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Полка
+ *         description: Полиця
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Shelf'
  *   put:
- *     summary: Обновить полку по ID
+ *     summary: Оновити полицю за ID
+ *     description: |
+ *       Полиця (shelf) — це фізична полиця на стелажі.
  *     tags:
- *       - Shelves
+ *       - Полиці
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +75,17 @@
  *             $ref: '#/components/schemas/Shelf'
  *     responses:
  *       200:
- *         description: Полка обновлена
+ *         description: Полиця оновлена
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Shelf'
  *   delete:
- *     summary: Удалить полку по ID
+ *     summary: Видалити полицю за ID
+ *     description: |
+ *       Полиця (shelf) — це фізична полиця на стелажі.
  *     tags:
- *       - Shelves
+ *       - Полиці
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +94,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Полка удалена
+ *         description: Полиця видалена
  */
 import { Router } from 'express';
 import * as shelfController from '../controllers/shelfController';

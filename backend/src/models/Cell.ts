@@ -4,13 +4,20 @@
  *   schemas:
  *     Cell:
  *       type: object
+ *       description: |
+ *         Комірка (cell) — це не кожна полиця, а лише створена вручну комірка (місце для товару на полиці). 
+ *         Комірки створюються вручну через форму або при додаванні товару на полицю. 
+ *         Кількість комірок на складі не дорівнює кількості полиць!
  *       properties:
  *         name:
  *           type: string
+ *           description: Назва комірки
  *         shelf:
  *           type: string
+ *           description: ID полиці, до якої належить комірка
  *         product:
  *           type: string
+ *           description: ID товару, який знаходиться у комірці (або null)
  */
 import mongoose, { Schema, Document } from 'mongoose';
 

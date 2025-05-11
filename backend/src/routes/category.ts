@@ -2,12 +2,14 @@
  * @openapi
  * /api/categories:
  *   get:
- *     summary: Получить список всех категорий
+ *     summary: Отримати список усіх категорій
+ *     description: |
+ *       Категорія (category) — це тип товару, який використовується для групування товарів на складі.
  *     tags:
- *       - Categories
+ *       - Категорії
  *     responses:
  *       200:
- *         description: Список категорий
+ *         description: Список категорій
  *         content:
  *           application/json:
  *             schema:
@@ -15,9 +17,11 @@
  *               items:
  *                 $ref: '#/components/schemas/Category'
  *   post:
- *     summary: Создать новую категорию
+ *     summary: Додати нову категорію
+ *     description: |
+ *       Категорія (category) — це тип товару, який використовується для групування товарів на складі.
  *     tags:
- *       - Categories
+ *       - Категорії
  *     requestBody:
  *       required: true
  *       content:
@@ -26,16 +30,18 @@
  *             $ref: '#/components/schemas/Category'
  *     responses:
  *       201:
- *         description: Категория создана
+ *         description: Категорію додано
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Category'
  * /api/categories/{id}:
  *   get:
- *     summary: Получить категорию по ID
+ *     summary: Отримати категорію за ID
+ *     description: |
+ *       Категорія (category) — це тип товару, який використовується для групування товарів на складі.
  *     tags:
- *       - Categories
+ *       - Категорії
  *     parameters:
  *       - in: path
  *         name: id
@@ -44,15 +50,17 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Категория
+ *         description: Категорія
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Category'
  *   put:
- *     summary: Обновить категорию по ID
+ *     summary: Оновити категорію за ID
+ *     description: |
+ *       Категорія (category) — це тип товару, який використовується для групування товарів на складі.
  *     tags:
- *       - Categories
+ *       - Категорії
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,15 +75,17 @@
  *             $ref: '#/components/schemas/Category'
  *     responses:
  *       200:
- *         description: Категория обновлена
+ *         description: Категорію оновлено
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Category'
  *   delete:
- *     summary: Удалить категорию по ID
+ *     summary: Видалити категорію за ID
+ *     description: |
+ *       Категорія (category) — це тип товару, який використовується для групування товарів на складі.
  *     tags:
- *       - Categories
+ *       - Категорії
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,7 +94,7 @@
  *           type: string
  *     responses:
  *       200:
- *         description: Категория удалена
+ *         description: Категорію видалено
  */
 import { Router } from 'express';
 import * as categoryController from '../controllers/categoryController';

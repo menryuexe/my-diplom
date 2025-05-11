@@ -4,11 +4,17 @@
  *   schemas:
  *     Warehouse:
  *       type: object
+ *       description: |
+ *         Склад (warehouse) — це фізичний склад, який містить секції.
  *       properties:
  *         name:
  *           type: string
+ *           description: Назва складу
+ *           example: "Головний склад"
  *         description:
  *           type: string
+ *           description: Опис складу
+ *           example: "Склад для зберігання електроніки"
  *         cells:
  *           type: array
  *           items:
