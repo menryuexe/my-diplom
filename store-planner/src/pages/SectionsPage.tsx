@@ -21,6 +21,7 @@ const SectionsPage: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [form] = Form.useForm();
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<string | undefined>();
 
   const fetchSections = async () => {
     setLoading(true);
@@ -95,6 +96,10 @@ const SectionsPage: React.FC = () => {
     }
   };
 
+  const filteredSections = selectedWarehouseId
+    ? sections.filter(s => (typeof s.warehouse === 'object' ? s.warehouse._id : s.warehouse) === selectedWarehouseId)
+    : sections;
+
   const columns = [
     { title: 'Назва', dataIndex: 'name', key: 'name' },
     { title: 'Склад', dataIndex: ['warehouse', 'name'], key: 'warehouse', render: (_: any, record: Section) => typeof record.warehouse === 'object' ? (record.warehouse as Warehouse).name : '' },
@@ -119,18 +124,34 @@ const SectionsPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>Секції</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedSection(null); }}>
           Створити секцію
         </Button>
       </div>
+      <div style={{ marginBottom: 16 }}>
+        <Select
+          allowClear
+          placeholder="Фільтр за складом"
+          value={selectedWarehouseId}
+          onChange={value => setSelectedWarehouseId(value)}
+          style={{ width: 220 }}
+        >
+          {warehouses.map(w => (
+            <Select.Option key={w._id} value={w._id}>{w.name}</Select.Option>
+          ))}
+        </Select>
+      </div>
       <Table
         loading={loading}
-        dataSource={sections}
+        dataSource={filteredSections}
         columns={columns}
         rowKey="_id"
+        size="middle"
+        style={{ fontSize: 16 }}
+        rowClassName={() => 'custom-table-row'}
       />
       <Modal
         title={editMode ? 'Редагувати секцію' : 'Створити секцію'}
@@ -152,6 +173,18 @@ const SectionsPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <style>
+        {`
+        .custom-table-row td {
+          padding-top: 14px !important;
+          padding-bottom: 14px !important;
+        }
+        .ant-table-thead > tr > th {
+          font-size: 17px;
+          background: #fafbfc;
+        }
+        `}
+      </style>
     </div>
   );
 };

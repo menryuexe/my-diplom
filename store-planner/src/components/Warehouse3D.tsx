@@ -59,6 +59,7 @@ interface Category {
 interface Warehouse3DProps {
   onCellClick?: (cell: Cell) => void;
   highlightCellId?: string | null;
+  highlightCellIds?: string[];
   categories?: Category[];
   warehouseId?: string | null;
 }
@@ -88,7 +89,7 @@ const CameraController: React.FC<{ target: [number, number, number] | null; look
   return null;
 };
 
-const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId, categories = [], warehouseId }) => {
+const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId, highlightCellIds, categories = [], warehouseId }) => {
   const [sections, setSections] = useState<Section[]>([]);
   const [racks, setRacks] = useState<Rack[]>([]);
   const [shelves, setShelves] = useState<Shelf[]>([]);
@@ -136,30 +137,54 @@ const Warehouse3D: React.FC<Warehouse3DProps> = ({ onCellClick, highlightCellId,
   }, []);
 
   useEffect(() => {
-    if (highlightCellId && cells.length) {
-      const cell = cells.find(c => c._id === highlightCellId);
-      if (cell) {
-        setSelectedCell(cell);
+    // Поддержка массива id для подсветки и фокуса
+    const ids = highlightCellIds && highlightCellIds.length ? highlightCellIds : (highlightCellId ? [highlightCellId] : []);
+    if (ids.length && cells.length) {
+      // Подсветить все ячейки
+      const highlightCells = cells.filter(c => ids.includes(c._id));
+      if (highlightCells.length) {
+        setSelectedCell(highlightCells[0]); // Открыть Drawer по первой
         setDrawerOpen(true);
-        setLastHighlightId(highlightCellId ?? null);
-        // Фокусировка камеры: задаём целевую позицию
-        const rack = racks.find(r => r._id === cell.shelf?.rack?._id);
-        if (rack) {
-          const pos = getCellPosition(cell, rack);
-          setTargetCameraPos([pos.x + 3, pos.y + 3, pos.z + 5]);
-          setTargetLookAt([pos.x, pos.y, pos.z]);
+        setLastHighlightId(ids.join(','));
+        // Фокусировка камеры: bounding box всех ячеек
+        const positions = highlightCells.map(cell => {
+          const rack = racks.find(r => r._id === (typeof cell.shelf.rack === 'object' ? cell.shelf.rack._id : cell.shelf.rack));
+          return rack ? getCellPosition(cell, rack) : { x: 0, y: 0, z: 0 };
+        });
+        if (positions.length) {
+          // Центр bounding box
+          const min = positions.reduce((acc, p) => ({ x: Math.min(acc.x, p.x), y: Math.min(acc.y, p.y), z: Math.min(acc.z, p.z) }), positions[0]);
+          const max = positions.reduce((acc, p) => ({ x: Math.max(acc.x, p.x), y: Math.max(acc.y, p.y), z: Math.max(acc.z, p.z) }), positions[0]);
+          const center = { x: (min.x + max.x) / 2, y: (min.y + max.y) / 2, z: (min.z + max.z) / 2 };
+          // Динамическое смещение: чем больше bounding box, тем дальше камера
+          const dx = max.x - min.x;
+          const dy = max.y - min.y;
+          const dz = max.z - min.z;
+          const maxSize = Math.max(dx, dy, dz, 1);
+          const distance = 6 + maxSize * 1.5; // базовое + масштаб
+          setTargetCameraPos([center.x + distance, center.y + distance, center.z + distance * 1.5]);
+          setTargetLookAt([center.x, center.y, center.z]);
+          // Через 1 сек сбрасываем автофокус, чтобы OrbitControls перехватил управление
+          setTimeout(() => {
+            setTargetCameraPos(null);
+            setTargetLookAt(null);
+          }, 1000);
         }
       }
     }
-    if (highlightCellId !== lastHighlightId) {
+    if ((highlightCellIds && highlightCellIds.join(',')) !== lastHighlightId) {
+      setDrawerOpen(true);
+      setLastHighlightId(highlightCellIds ? highlightCellIds.join(',') : null);
+    } else if (highlightCellId !== lastHighlightId) {
       setDrawerOpen(true);
       setLastHighlightId(highlightCellId ?? null);
     }
-  }, [highlightCellId, cells, racks]);
+  }, [highlightCellId, highlightCellIds, cells, racks]);
 
   const getCellColor = (cell: Cell) => {
     if (!cell) return '#ffd600';
     if (selectedCell?._id === cell._id) return '#ff0000';
+    if (highlightCellIds && highlightCellIds.includes(cell._id)) return '#ff0000';
     if (highlightCellId && cell._id === highlightCellId) return '#ff0000';
     if (cell.product) return '#66bb6a';
     return '#ffd600';

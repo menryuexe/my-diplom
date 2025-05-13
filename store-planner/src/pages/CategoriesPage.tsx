@@ -102,7 +102,7 @@ const CategoriesPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>Категорії</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedCategory(null); }}>
@@ -124,6 +124,9 @@ const CategoriesPage: React.FC = () => {
         columns={columns}
         rowKey="_id"
         pagination={{ pageSize: 8, showSizeChanger: true, pageSizeOptions: [5, 8, 20, 50] }}
+        size="middle"
+        style={{ fontSize: 16 }}
+        rowClassName={() => 'custom-table-row'}
       />
       <Modal
         title={editMode ? 'Редагувати категорію' : 'Створити категорію'}
@@ -138,6 +141,18 @@ const CategoriesPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <style>
+        {`
+        .custom-table-row td {
+          padding-top: 14px !important;
+          padding-bottom: 14px !important;
+        }
+        .ant-table-thead > tr > th {
+          font-size: 17px;
+          background: #fafbfc;
+        }
+        `}
+      </style>
     </div>
   );
 };

@@ -183,7 +183,7 @@ const ProductsPage: React.FC = () => {
             Показати на мапі
           </a>
         ) : (
-          <span style={{ color: '#aaa' }}>Немає комірки</span>
+          <div style={{ color: '#888', textAlign: 'center', width: '100%' }}>У товару немає комірки</div>
         );
       },
     },
@@ -208,7 +208,7 @@ const ProductsPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>Товари</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedProduct(null); }}>
@@ -255,6 +255,9 @@ const ProductsPage: React.FC = () => {
         columns={columns}
         rowKey="_id"
         pagination={{ pageSize: 10, showSizeChanger: true, pageSizeOptions: [5, 10, 20, 50] }}
+        size="middle"
+        style={{ fontSize: 16 }}
+        rowClassName={() => 'custom-table-row'}
       />
       <Modal
         title={editMode ? 'Редагувати товар' : 'Створити товар'}
@@ -288,6 +291,18 @@ const ProductsPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <style>
+        {`
+        .custom-table-row td {
+          padding-top: 14px !important;
+          padding-bottom: 14px !important;
+        }
+        .ant-table-thead > tr > th {
+          font-size: 17px;
+          background: #fafbfc;
+        }
+        `}
+      </style>
     </div>
   );
 };

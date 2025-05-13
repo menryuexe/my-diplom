@@ -6,6 +6,7 @@ import ShelvesPage from './ShelvesPage';
 interface Section {
   _id: string;
   name: string;
+  warehouse: Warehouse | string;
 }
 
 interface Rack {
@@ -14,15 +15,23 @@ interface Rack {
   section: Section | string;
 }
 
+interface Warehouse {
+  _id: string;
+  name: string;
+}
+
 const RacksPage: React.FC = () => {
   const [racks, setRacks] = useState<Rack[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedRack, setSelectedRack] = useState<Rack | null>(null);
   const [form] = Form.useForm();
   const [shelfCount, setShelfCount] = useState(1);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<string | undefined>();
+  const [selectedSectionId, setSelectedSectionId] = useState<string | undefined>();
 
   const fetchRacks = async () => {
     setLoading(true);
@@ -45,10 +54,36 @@ const RacksPage: React.FC = () => {
     }
   };
 
+  const fetchWarehouses = async () => {
+    try {
+      const res = await axios.get('/api/warehouses');
+      setWarehouses(res.data);
+    } catch (err) {
+      message.error('Помилка при завантаженні складів');
+    }
+  };
+
   useEffect(() => {
     fetchRacks();
     fetchSections();
+    fetchWarehouses();
   }, []);
+
+  const filteredSections = selectedWarehouseId
+    ? sections.filter(s => (typeof s.warehouse === 'object' ? s.warehouse._id : s.warehouse) === selectedWarehouseId)
+    : sections;
+
+  const filteredRacks = racks.filter(rack => {
+    const sectionId = typeof rack.section === 'object' ? rack.section._id : rack.section;
+    const section = sections.find(s => s._id === sectionId);
+    if (selectedWarehouseId && (!section || (typeof section.warehouse === 'object' ? section.warehouse._id : section.warehouse) !== selectedWarehouseId)) {
+      return false;
+    }
+    if (selectedSectionId && sectionId !== selectedSectionId) {
+      return false;
+    }
+    return true;
+  });
 
   const handleCreate = async (values: any) => {
     try {
@@ -110,6 +145,19 @@ const RacksPage: React.FC = () => {
 
   const columns = [
     { title: 'Назва', dataIndex: 'name', key: 'name' },
+    
+    {
+      title: 'Склад',
+      key: 'warehouse',
+      align: 'center' as const,
+      render: (_: any, record: Rack) => {
+        const section = typeof record.section === 'object' ? record.section : sections.find(s => s._id === record.section);
+        if (!section) return '—';
+        const warehouseId = typeof section.warehouse === 'object' ? section.warehouse._id : section.warehouse;
+        const warehouse = warehouses.find(w => w._id === warehouseId);
+        return warehouse ? warehouse.name : '—';
+      }
+    },
     { title: 'Секція', dataIndex: ['section', 'name'], key: 'section', render: (_: any, record: Rack) => typeof record.section === 'object' ? (record.section as Section).name : '' },
     {
       title: 'Дії',
@@ -128,22 +176,54 @@ const RacksPage: React.FC = () => {
           </Popconfirm>
         </>
       ),
+      align: 'center' as const,
     },
   ];
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>Стелажі</h2>
         <Button type="primary" onClick={() => { setModalOpen(true); setEditMode(false); form.resetFields(); setSelectedRack(null); setShelfCount(1); }}>
           Створити стелаж
         </Button>
       </div>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+        <Select
+          allowClear
+          placeholder="Фільтр за складом"
+          value={selectedWarehouseId}
+          onChange={value => {
+            setSelectedWarehouseId(value);
+            setSelectedSectionId(undefined);
+          }}
+          style={{ width: 200 }}
+        >
+          {warehouses.map(w => (
+            <Select.Option key={w._id} value={w._id}>{w.name}</Select.Option>
+          ))}
+        </Select>
+        <Select
+          allowClear
+          placeholder="Фільтр за секцією"
+          value={selectedSectionId}
+          onChange={value => setSelectedSectionId(value)}
+          style={{ width: 200 }}
+          disabled={!selectedWarehouseId && !sections.length}
+        >
+          {filteredSections.map(s => (
+            <Select.Option key={s._id} value={s._id}>{s.name}</Select.Option>
+          ))}
+        </Select>
+      </div>
       <Table
         loading={loading}
-        dataSource={racks}
+        dataSource={filteredRacks}
         columns={columns}
         rowKey="_id"
+        size="middle"
+        style={{ fontSize: 16 }}
+        rowClassName={() => 'custom-table-row'}
       />
       <Modal
         title={editMode ? 'Редагувати стелаж' : 'Створити стелаж'}
@@ -172,6 +252,18 @@ const RacksPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <style>
+        {`
+        .custom-table-row td {
+          padding-top: 14px !important;
+          padding-bottom: 14px !important;
+        }
+        .ant-table-thead > tr > th {
+          font-size: 17px;
+          background: #fafbfc;
+        }
+        `}
+      </style>
     </div>
   );
 };
